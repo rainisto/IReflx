@@ -10,7 +10,7 @@ UdpData::UdpData()
 
 }
 
-UdpData::UdpData(BYTE* buf, uint32_t len)
+UdpData::UdpData(uint8_t* buf, uint32_t len)
 {
 	if (buf != nullptr)
 	{
@@ -59,12 +59,12 @@ void UdpData::swap(UdpData& src)
 	_data.swap(src._data);
 }
 
-BYTE* UdpData::data()
+uint8_t* UdpData::data()
 {
 	return _data.data();
 }
 
-const BYTE* UdpData::data() const
+const uint8_t* UdpData::data() const
 {
 	return _data.data();
 }
@@ -74,7 +74,7 @@ size_t UdpData::length() const
 	return _data.size();
 }
 
-UdpData& UdpData::write(const BYTE* buf, int count)
+UdpData& UdpData::write(const uint8_t* buf, int count)
 {
 	_data.insert(_data.end(), &buf[0], &buf[count]);
 	return *this;

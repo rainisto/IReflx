@@ -1,6 +1,8 @@
 #include "StdinReader.h"
 
+#ifdef _WIN32
 #include <io.h>
+#endif
 #include <fcntl.h>
 
 
@@ -10,7 +12,9 @@ StdinReader::StdinReader(QueueType& queue)
 	, _run(true)
 	, _queue(queue)
 {
+#ifdef _WIN32
 	_setmode(_fileno(stdin), _O_BINARY);
+#endif
 }
 
 StdinReader::~StdinReader()
@@ -46,7 +50,7 @@ uint32_t StdinReader::port() noexcept
 
 void StdinReader::operator()()
 {
-	BYTE buffer[1468];
+	uint8_t buffer[1468]{};
 	while (_run)
 	{
 		size_t r = fread(buffer, 1, sizeof(buffer), stdin);

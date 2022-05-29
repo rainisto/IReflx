@@ -1,7 +1,10 @@
 #include "GmtiReader.h"
 
+#ifdef _WIN32
 #include <io.h>
+#endif
 #include <fcntl.h>
+#include <string.h>
 
 
 GmtiReader::GmtiReader(QueueType& queue)
@@ -12,7 +15,9 @@ GmtiReader::GmtiReader(QueueType& queue)
 	, _packetSize(-1)
 	, _pos(0)
 {
+#ifdef _WIN32
 	_setmode(_fileno(stdin), _O_BINARY);
+#endif
 }
 
 GmtiReader::~GmtiReader()
@@ -48,7 +53,7 @@ uint32_t GmtiReader::port() noexcept
 
 void GmtiReader::operator()()
 {
-	BYTE buffer[BUFSIZ];
+	uint8_t buffer[BUFSIZ]{};
 	while (_run)
 	{
 		size_t r = fread(buffer, 1, sizeof(buffer), stdin);

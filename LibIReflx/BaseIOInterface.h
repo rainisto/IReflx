@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "BoundedBuffer.h"
 #include "UdpData.h"
 

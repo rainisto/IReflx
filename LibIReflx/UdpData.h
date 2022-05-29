@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
 
-typedef unsigned char BYTE;
 
 class UdpData
 {
@@ -12,7 +12,7 @@ public:
 	};
 
 	UdpData();
-	UdpData(BYTE* buf, uint32_t len);
+	UdpData(uint8_t* buf, uint32_t len);
 	UdpData(const UdpData& rhs);
 	UdpData& operator=(const UdpData& rhs);
 	UdpData(UdpData&& src) noexcept;
@@ -21,13 +21,13 @@ public:
 
 	void swap(UdpData& src);
 
-	BYTE* data();
-	const BYTE* data() const;
+	uint8_t* data();
+	const uint8_t* data() const;
 	size_t length() const;
 
-	UdpData& write(const BYTE* data, int len);
+	UdpData& write(const uint8_t* data, int len);
 
 private:
-	std::vector<BYTE> _data;
+	std::vector<uint8_t> _data;
 };
 

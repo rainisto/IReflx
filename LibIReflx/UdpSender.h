@@ -2,8 +2,6 @@
 
 #include "BaseIOInterface.h"
 
-
-
 class UdpSender :
 	public BaseIOInterface
 {

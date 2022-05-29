@@ -1,10 +1,11 @@
 #include "UdpSender.h"
 
-#include <io.h>
 #include <iostream>
 #include <fcntl.h>
+#include <string.h>
 
 #ifdef _WIN32
+#include <io.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #else
@@ -58,7 +59,9 @@ UdpSender::UdpSender(const char* ipaddr, uint32_t port, UdpSender::QueueType& q,
 
 	if (strcmp(ipaddr, "-") == 0) // send the data onto a socket
 	{
+#ifdef _WIN32
 		_setmode(_fileno(stdout), _O_BINARY);
+#endif
 	}
 	else // write the data to stdout
 	{
@@ -73,10 +76,12 @@ UdpSender::~UdpSender(void)
 
 void UdpSender::initSocket(const char* ipaddr, uint32_t port, unsigned char ttl, const char* iface_addr)
 {
+	char szErr[BUFSIZ]{};
+	IN_ADDR inaddr;
+#ifdef _WIN32
 	WORD winsock_version, err;
 	WSADATA winsock_data;
 	winsock_version = MAKEWORD(2, 2);
-	IN_ADDR inaddr;
 
 	err = WSAStartup(winsock_version, &winsock_data);
 	if (err != 0)
@@ -84,15 +89,19 @@ void UdpSender::initSocket(const char* ipaddr, uint32_t port, unsigned char ttl,
 		std::exception exp("Failed to initialize WinSock");
 		throw exp;
 	}
+#endif
 
 	//----------------------
 	// Create a SOCKET for connecting to server
 	_pimpl->_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (_pimpl->_socket == INVALID_SOCKET) {
+#ifdef _WIN32
 		WSACleanup();
-		char szErr[BUFSIZ];
 		sprintf(szErr, "Error at socket(): %d", WSAGetLastError());
-		std::exception exp(szErr);
+#else
+		sprintf(szErr, "Error at socket(): %d", errno);
+#endif
+		std::runtime_error exp(szErr);
 		throw exp;
 	}
 
@@ -102,42 +111,51 @@ void UdpSender::initSocket(const char* ipaddr, uint32_t port, unsigned char ttl,
 
 	if (setsockopt(_pimpl->_socket, IPPROTO_IP, IP_MULTICAST_TTL, (char*)&optVal, optLen) == SOCKET_ERROR)
 	{
+#ifdef _WIN32
 		WSACleanup();
-		char szErr[BUFSIZ];
 		sprintf(szErr, "Error setting socket option IP_MULTICAST_TTL: %d", WSAGetLastError());
-		std::exception exp(szErr);
+#else
+		sprintf(szErr, "Error setting socket option IP_MULICAST_TTL: %d", errno);
+#endif
+		std::runtime_error exp(szErr);
 		throw exp;
 	}
 
 	if (strlen(iface_addr) > 0)
 	{
 		inet_pton(AF_INET, iface_addr, (PVOID)&inaddr);
-		if (setsockopt(_pimpl->_socket, IPPROTO_IP, IP_MULTICAST_IF, (char*)&inaddr.S_un.S_addr, sizeof(inaddr.S_un.S_addr)) == SOCKET_ERROR)
+		if (setsockopt(_pimpl->_socket, IPPROTO_IP, IP_MULTICAST_IF, (char*)&inaddr.s_addr, sizeof(inaddr.s_addr)) == SOCKET_ERROR)
 		{
+#ifdef _WIN32
 			WSACleanup();
-			char szErr[BUFSIZ];
 			sprintf(szErr, "UdpSender Error setting socket option IP_MULTICAST_IF: %d", WSAGetLastError());
-			std::exception exp(szErr);
+#else
+			sprintf(szErr, "UdpSender Error setting socket option IP_MULTICAST_IF: %d", errno);
+#endif
+			std::runtime_error exp(szErr);
 			throw exp;
 		}
 	}
 
 	if (inet_pton(AF_INET, ipaddr, (PVOID)&inaddr) != 1)
 	{
+#ifdef _WIN32
 		WSACleanup();
-		char szErr[BUFSIZ];
-		sprintf(szErr, "Error when calling inet_pton: %d", WSAGetLastError());
-		std::exception exp(szErr);
+		sprintf_s(szErr, "Error when calling inet_pton: %d", WSAGetLastError());
+#else
+		sprintf(szErr, "Error when calling inet_pton: %d", errno);
+#endif
+		std::runtime_error exp(szErr);
 		throw exp;
 	}
 	//----------------------
 	// The sockaddr_in structure specifies the address family,
 	// IP address, and port for the socket that is being send to
 	_pimpl->_recvAddr.sin_family = AF_INET;
-	_pimpl->_recvAddr.sin_addr.s_addr = inaddr.S_un.S_addr;
+	_pimpl->_recvAddr.sin_addr.s_addr = inaddr.s_addr;
 	_pimpl->_recvAddr.sin_port = htons(port);
 
-	_pimpl->_address = _pimpl->_recvAddr.sin_addr.S_un.S_addr;
+	_pimpl->_address = _pimpl->_recvAddr.sin_addr.s_addr;
 }
 
 void UdpSender::stop()
@@ -145,7 +163,11 @@ void UdpSender::stop()
 	if (_pimpl->_socket != INVALID_SOCKET)
 	{
 		shutdown(_pimpl->_socket, SD_SEND);
+#ifdef _WIN32
 		closesocket(_pimpl->_socket);
+#else
+		close(_pimpl->_socket);
+#endif
 	}
 	_pimpl->_run = false;
 }
@@ -196,8 +218,11 @@ void UdpSender::send(const UdpData& data)
 
 		if (status == SOCKET_ERROR)
 		{
+#ifdef _WIN32
 			const UINT32 errCode = WSAGetLastError();
-			cerr << "UDP Sending Error: " << errCode << endl;
+#else
+			const int errCode = errno;
+#endif
 		}
 		else
 		{

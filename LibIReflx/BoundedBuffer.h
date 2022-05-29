@@ -140,7 +140,7 @@ private:
 private:
 	void swap(BoundedBuffer& src)
 	{
-		_buffer = std::vector<T, N>{};
+		_buffer = std::array<T, N>{};
 		_buffer.swap(src._buffer);
 		std::swap(_fill_ptr, src._fill_ptr);
 		std::swap(_use_ptr, src._use_ptr);

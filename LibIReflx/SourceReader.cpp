@@ -1,5 +1,7 @@
 #include "SourceReader.h"
 
+#include <string.h>
+
 #include "UdpListener.h"
 #include "StdinReader.h"
 #include "GmtiReader.h"
@@ -9,7 +11,7 @@ SourceReader::SourceReader(const char* ipmulticast, uint32_t port, BaseIOInterfa
 {
 	if (ipmulticast != nullptr && strcmp(ipmulticast, "-") != 0)
 	{
-		if (_stricmp(ipmulticast, "gmti") == 0)
+		if (strcmp(ipmulticast, "gmti") == 0)
 		{
 			_pimpl = new GmtiReader(queue);
 		}

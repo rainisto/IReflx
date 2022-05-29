@@ -175,7 +175,7 @@ int ThetaStream::CommandLineParser::ttl() const
 
 void ThetaStream::CommandLineParser::swap(ThetaStream::CommandLineParser& other)
 {
-	std::swap(_pimpl->sourceIP, other._pimpl->sourceIP);
+	std::swap(_pimpl->sourcePort, other._pimpl->sourcePort);
 	std::swap(_pimpl->destinationPort, other._pimpl->destinationPort);
 	std::swap(_pimpl->ttl, other._pimpl->ttl);
 	_pimpl->destinationIP.swap(other._pimpl->destinationIP);

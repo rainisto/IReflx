@@ -31,7 +31,7 @@ private:
 	BaseIOInterface::QueueType& _queue;
 	int _packetSize;
 	int _pos;
-	BYTE _packetSizeBuf[4]{};
-	std::vector<BYTE> _message;
+	uint8_t _packetSizeBuf[4]{};
+	std::vector<uint8_t> _message;
 };
 
