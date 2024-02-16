@@ -65,6 +65,7 @@ ThetaStream::CommandLineParser::~CommandLineParser()
 ThetaStream::CommandLineParser::CommandLineParser(const CommandLineParser& other)
 {
 	_pimpl = std::make_unique<ThetaStream::CommandLineParser::Impl>();
+	_pimpl->sourcePort = other.sourcePort();
 	_pimpl->destinationPort = other.destinationPort();
 	_pimpl->ttl = other.ttl();
 	_pimpl->sourceIP = other.sourceIp();
