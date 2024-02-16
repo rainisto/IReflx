@@ -1,7 +1,7 @@
 // IReflx.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "IStarReflextor.h"
+#include <IReflx/IStarReflextor.h>
 #include <iostream>
 
 ThetaStream::IStarReflextor* pReflx;
@@ -30,7 +30,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 
 void PrintHeader()
 {
-	std::cerr << "Reflextor Console Application" << std::endl;
+	std::cerr << "ISTAR Reflextor Console Application" << std::endl;
 	std::cerr << "Developed by James McAvoy, jimcavoy@thetastream.com, ThetaStream Consulting" << std::endl << std::endl;
 	std::cerr << std::endl << "Enter Ctrl-C to exit" << std::endl << std::endl;
 }

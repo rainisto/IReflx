@@ -1,31 +1,39 @@
-# CMakeList.txt : CMake project for IReflx, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
-project(IReflx)
+cmake_minimum_required (VERSION 3.21)
+
+project(IReflx
+	VERSION 1.0.0
+	DESCRIPTION "ISTAR Reflextor Library"
+	LANGUAGES C CXX
+)
+
+# set the postfix "d" for the resulting .so or .dll files when building the
+# library in debug mode
+set(CMAKE_DEBUG_POSTFIX d)
+
+add_library(IReflx STATIC)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+target_compile_features(
+    IReflx
+    PUBLIC cxx_std_14
+)
 
-if (WIN32)
-    set(CMAKE_INSTALL_LIBDIR $ENV{APPDATA})
-else()
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+add_compile_definitions(QSIZE=100)
+
+file(GLOB SRC_LIST
+	src/*.cpp)
+
+target_sources(IReflx PRIVATE ${SRC_LIST})
+
+set_property(TARGET IReflx PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+if(WIN32)
+    set(WS wsock32 ws2_32)
 endif()
 
-# Add source to this project's executable.
-add_executable (IReflx "main.cpp" )
+target_link_libraries(IReflx ${WS})
 
-list(APPEND EXTRA_LIBS LibIReflx)
-
-target_link_libraries(IReflx PUBLIC ${EXTRA_LIBS})
-
-# Install targets
-install(TARGETS IReflx 
-    EXPORT IReflxTargets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
+target_include_directories(IReflx
+		PRIVATE src/IReflx
+		PUBLIC include
 )
