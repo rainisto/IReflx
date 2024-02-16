@@ -3,7 +3,7 @@ An application to redirect UDP/IP streams to a different socket address.
 
 ## How to Build
 
-This project uses CMake to generate build environment and install the application, IReflxApp. Do the following steps:
+This project uses CMake to generate build environment, build, and install the application, IReflxApp. Do the following steps:
 
 1. cmake -S . -B ./build
 
