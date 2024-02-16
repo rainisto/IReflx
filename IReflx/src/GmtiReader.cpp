@@ -4,7 +4,6 @@
 #include <io.h>
 #endif
 #include <fcntl.h>
-#include <string.h>
 
 
 GmtiReader::GmtiReader(QueueType& queue)
