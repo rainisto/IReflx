@@ -34,6 +34,7 @@
 
 using namespace std;
 const int BUFLEN = 1500;
+extern int x;
 
 class UdpSender::Impl
 {
@@ -187,12 +188,12 @@ void UdpSender::operator()()
 
 void UdpSender::send(const UdpData& data)
 {
-	// Write the data to the standard console out
-	if (_pimpl->_socket == INVALID_SOCKET)
+        if (!x)
 	{
 		size_t w = 0;
 		for (size_t nleft = data.length(); nleft > 0;)
 		{
+                        // Write the data to the standard console out
 			w = fwrite(data.data(), 1, nleft, stdout);
 			if (w == 0)
 			{
@@ -207,7 +208,7 @@ void UdpSender::send(const UdpData& data)
 			fflush(stdout);
 		}
 	}
-	else // Send the data onto a socket
+        if (_pimpl->_socket != INVALID_SOCKET)
 	{
 		const int status = sendto(_pimpl->_socket,
 			(char*)data.data(),
@@ -224,7 +225,7 @@ void UdpSender::send(const UdpData& data)
 			const int errCode = errno;
 #endif
 		}
-		else
+		else if (x)
 		{
 			_pimpl->_count++;
 			_pimpl->_bytes += data.length();

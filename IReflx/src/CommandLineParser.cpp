@@ -5,10 +5,12 @@
 #include <sstream>
 
 using namespace std;
+int x = 0;
 
 const char* usage = "Usage: IReflx <OPTIONS>";
 const char* opts = "  -s\tSource socket address; otherwise, stdin.\n \
- -d\tDestination socket address; otherwise, stdout.\n \
+ -d\tDestination socket address; and, stdout.\n \
+ -x\tDisable stdout\n \
  -t\tTime to Live. (default: 16)\n \
  -i\tSpecifies the network interface IP address for the source stream.\n \
  -o\tSpecifies the network interface IP address for the destination stream.\n \
@@ -106,6 +108,9 @@ void ThetaStream::CommandLineParser::parse(int argc, char** argv, const char* ap
 		case 't':
 			_pimpl->ttl = std::stoi(*argv + 1);
 			break;
+                case 'x':
+                        x = 1;
+                        break;
 		case '?':
 		{
 			std::stringstream msg;
